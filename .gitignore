@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Дополнительно для безопасности проекта CS2 OverHeat ---
+*.db
+*.sqlite
+instance/
