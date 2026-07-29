@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Турнирная сетка — CS2 OverHeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-sitemap"></i> Турнирная сетка</h1>
+    <p>Результаты матчей обновляются автоматически</p>
+</div>
+
+<div class="bracket-container">
+    <!-- Четвертьфинал -->
+    <div class="bracket-round">
+        <h3 class="round-title">ЧЕТВЕРТЬФИНАЛ</h3>
+        <div class="bracket-matches">
+            {% for match in quarterfinals %}
+            <div class="bracket-match" data-match-id="{{ match.id }}">
+                <div class="match-team {% if match.winner_id == match.team1_id %}winner{% endif %}">
+                    <span class="team-name">{{ match.team1_id | team_name(teams) if match.team1_id else 'TBD' }}</span>
+                    <span class="team-score">{{ match.team1_score }}</span>
+                </div>
+                <div class="match-team {% if match.winner_id == match.team2_id %}winner{% endif %}">
+                    <span class="team-name">{{ match.team2_id | team_name(teams) if match.team2_id else 'TBD' }}</span>
+                    <span class="team-score">{{ match.team2_score }}</span>
+                </div>
+                {% if session.get('admin') %}
+                <button class="match-edit-btn" onclick="editMatch({{ match.id }})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Полуфинал -->
+    <div class="bracket-round">
+        <h3 class="round-title">ПОЛУФИНАЛ</h3>
+        <div class="bracket-matches">
+            {% for match in semifinals %}
+            <div class="bracket-match" data-match-id="{{ match.id }}">
+                <div class="match-team {% if match.winner_id == match.team1_id %}winner{% endif %}">
+                    <span class="team-name">{{ match.team1_id | team_name(teams) if match.team1_id else 'TBD' }}</span>
+                    <span class="team-score">{{ match.team1_score }}</span>
+                </div>
+                <div class="match-team {% if match.winner_id == match.team2_id %}winner{% endif %}">
+                    <span class="team-name">{{ match.team2_id | team_name(teams) if match.team2_id else 'TBD' }}</span>
+                    <span class="team-score">{{ match.team2_score }}</span>
+                </div>
+                {% if session.get('admin') %}
+                <button class="match-edit-btn" onclick="editMatch({{ match.id }})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Финал -->
+    <div class="bracket-round final-round">
+        <h3 class="round-title">ГРАНД-ФИНАЛ</h3>
+        <div class="bracket-matches">
+            {% if final %}
+            <div class="bracket-match final-match" data-match-id="{{ final.id }}">
+                <div class="match-team {% if final.winner_id == final.team1_id %}winner{% endif %}">
+                    <span class="team-name">{{ final.team1_id | team_name(teams) if final.team1_id else 'TBD' }}</span>
+                    <span class="team-score">{{ final.team1_score }}</span>
+                </div>
+                <div class="match-team {% if final.winner_id == final.team2_id %}winner{% endif %}">
+                    <span class="team-name">{{ final.team2_id | team_name(teams) if final.team2_id else 'TBD' }}</span>
+                    <span class="team-score">{{ final.team2_score }}</span>
+                </div>
+                {% if session.get('admin') %}
+                <button class="match-edit-btn" onclick="editMatch({{ final.id }})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования матча -->
+<div id="editMatchModal" class="modal">
+    <div class="modal-content edit-modal">
+        <span class="modal-close" onclick="closeEditModal()">&times;</span>
+        <h2><i class="fas fa-edit"></i> Редактировать матч</h2>
+        <div class="edit-form">
+            <div class="edit-team">
+                <label id="editTeam1Name">Команда 1</label>
+                <input type="number" id="editTeam1Score" min="0" max="30" value="0">
+            </div>
+            <div class="edit-vs">VS</div>
+            <div class="edit-team">
+                <label id="editTeam2Name">Команда 2</label>
+                <input type="number" id="editTeam2Score" min="0" max="30" value="0">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="saveMatch()">
+                <i class="fas fa-save"></i> Сохранить результат
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — CS2 OverHeat{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card register-card">
+        <div class="login-header">
+            <i class="fas fa-user-plus"></i>
+            <h1>Регистрация команды</h1>
+            <p>Заполните данные для участия в турнире</p>
+        </div>
+        
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="team_name">
+                    <i class="fas fa-users"></i> Название команды
+                </label>
+                <input type="text" id="team_name" name="team_name" 
+                       placeholder="Например: NAVI" required maxlength="30">
+            </div>
+            
+            <div class="form-divider">
+                <span>👤 Игрок 1 (Капитан)</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="player1_name">
+                    <i class="fas fa-user"></i> Ваш никнейм
+                </label>
+                <input type="text" id="player1_name" name="player1_name" 
+                       placeholder="Ваш игровой ник" required maxlength="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="player1_steam">
+                    <i class="fab fa-steam"></i> Ссылка на ваш Steam профиль
+                </label>
+                <input type="text" id="player1_steam" name="player1_steam" 
+                       placeholder="https://steamcommunity.com/id/XXX/" required>
+            </div>
+            
+            <div class="form-divider">
+                <span>👤 Игрок 2 (Напарник)</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="player2_name">
+                    <i class="fas fa-user"></i> Никнейм напарника
+                </label>
+                <input type="text" id="player2_name" name="player2_name" 
+                       placeholder="Ник вашего напарника" required maxlength="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="player2_steam">
+                    <i class="fab fa-steam"></i> Ссылка на Steam профиль напарника
+                </label>
+                <input type="text" id="player2_steam" name="player2_steam" 
+                       placeholder="https://steamcommunity.com/id/XXX/" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-large btn-block">
+                <i class="fas fa-user-plus"></i> Зарегистрировать команду
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p><i class="fas fa-info-circle"></i> После регистрации напарник сможет войти через кнопку "Войти"</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

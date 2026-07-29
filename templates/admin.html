@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}Админ-панель — CS2 Tournament{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-user-shield"></i> Админ-панель</h1>
+    <p>Управление турниром</p>
+</div>
+
+{% if not logged_in %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fas fa-lock"></i>
+            <h1>Вход администратора</h1>
+        </div>
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label><i class="fas fa-key"></i> Пароль</label>
+                <input type="password" name="password" placeholder="Введите пароль" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+    </div>
+</div>
+{% else %}
+
+<div class="admin-logout">
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">
+        <i class="fas fa-sign-out-alt"></i> Выйти из админки
+    </a>
+</div>
+
+<!-- Добавить команду -->
+<div class="admin-section">
+    <h2><i class="fas fa-plus-circle"></i> Добавить команду</h2>
+    <form method="POST" action="{{ url_for('add_team') }}" class="admin-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Название команды</label>
+                <input type="text" name="name" placeholder="Например: NAVI" required>
+            </div>
+            <div class="form-group form-group-small">
+                <label>Эмодзи</label>
+                <input type="text" name="emoji" placeholder="🎮" maxlength="2">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Добавить
+        </button>
+    </form>
+</div>
+
+<!-- Добавить игрока -->
+<div class="admin-section">
+    <h2><i class="fas fa-user-plus"></i> Добавить игрока</h2>
+    <form method="POST" action="{{ url_for('add_player') }}" class="admin-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Никнейм</label>
+                <input type="text" name="nickname" placeholder="s1mple" required>
+            </div>
+            <div class="form-group">
+                <label>Ссылка на Steam профиль</label>
+                <input type="text" name="steam_url"
+                       placeholder="https://steamcommunity.com/id/XXX/" required>
+            </div>
+            <div class="form-group">
+                <label>Команда</label>
+                <select name="team_id" required>
+                    <option value="">— Выберите —</option>
+                    {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.logo_emoji }} {{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Добавить игрока
+        </button>
+        <small class="form-hint">
+            <i class="fas fa-info-circle"></i> Часы в CS2 определятся автоматически через Steam API
+        </small>
+    </form>
+</div>
+
+<!-- Добавить правило -->
+<div class="admin-section">
+    <h2><i class="fas fa-book-open"></i> Добавить правило</h2>
+    <form method="POST" action="{{ url_for('add_rule') }}" class="admin-form">
+        <div class="form-row">
+            <div class="form-group form-group-small">
+                <label>Иконка</label>
+                <input type="text" name="icon" placeholder="📋" maxlength="2">
+            </div>
+            <div class="form-group">
+                <label>Заголовок</label>
+                <input type="text" name="title" placeholder="Название правила" required>
+            </div>
+            <div class="form-group form-group-small">
+                <label>Порядок</label>
+                <input type="number" name="order_num" value="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Описание</label>
+            <textarea name="description" rows="3" placeholder="Текст правила..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Добавить правило
+        </button>
+    </form>
+</div>
+
+<!-- Управление Veto -->
+<div class="admin-section">
+    <h2><i class="fas fa-ban"></i> Управление Veto карт</h2>
+
+    {% set active_veto = [] %}
+    {% for s in sessions %}{% endfor %}
+
+    <form method="POST" action="{{ url_for('start_veto') }}" class="admin-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Команда 1</label>
+                <select name="team1_id" required>
+                    <option value="">— Выберите —</option>
+                    {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.logo_emoji }} {{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Команда 2</label>
+                <select name="team2_id" required>
+                    <option value="">— Выберите —</option>
+                    {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.logo_emoji }} {{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-play"></i> Запустить Veto
+        </button>
+        <small class="form-hint">
+            <i class="fas fa-info-circle"></i> Команды будут по очереди исключать карты пока не останется одна
+        </small>
+    </form>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('cancel_veto') }}" class="btn btn-secondary" onclick="return confirm('Отменить текущее veto?')">
+            <i class="fas fa-stop"></i> Отменить текущее Veto
+        </a>
+        <a href="{{ url_for('veto') }}" class="btn btn-primary" style="margin-left: 10px;">
+            <i class="fas fa-eye"></i> Открыть страницу Veto
+        </a>
+    </div>
+</div>
+
+<!-- Список команд -->
+<div class="admin-section">
+    <h2><i class="fas fa-list"></i> Команды ({{ teams|length }})</h2>
+
+    {% if teams %}
+    <div class="admin-list">
+        {% for team in teams %}
+        <div class="admin-item">
+            <div class="admin-item-info">
+                <span class="team-emoji">{{ team.logo_emoji or '🎮' }}</span>
+                <strong>{{ team.name }}</strong>
+                <div class="team-details">
+                    {% if team.player1_name %}
+                        <small>👤 {{ team.player1_name }}</small>
+                    {% endif %}
+                    {% if team.player2_name %}
+                        <small>👤 {{ team.player2_name }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="admin-item-actions">
+                <a href="{{ url_for('delete_item', type='team', item_id=team.id) }}"
+                   class="btn-delete"
+                   onclick="return confirm('⚠️ Вы уверены, что хотите удалить команду &quot;{{ team.name }}&quot;?\n\nВсе связанные данные (матчи, veto-сессии) будут удалены!')">
+                    <i class="fas fa-trash"></i> Удалить
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-users-slash"></i>
+        <h3>Команд пока нет</h3>
+        <p>Зарегистрируйте первую команду через форму выше</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Список игроков -->
+<div class="admin-section">
+    <h2><i class="fas fa-users"></i> Игроки ({{ players|length }})</h2>
+    <div class="admin-list">
+        {% for player in players %}
+        <div class="admin-item">
+            <span>
+                <strong>{{ player.nickname }}</strong>
+                <small>[{{ player.team_name }}]</small>
+                <small class="hours-badge">⏱ {{ player.cs2_hours }}ч</small>
+            </span>
+            <a href="{{ url_for('delete_item', type='player', item_id=player.id) }}"
+               class="btn-delete" onclick="return confirm('Удалить?')">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Список правил -->
+<div class="admin-section">
+    <h2><i class="fas fa-book"></i> Правила ({{ rules|length }})</h2>
+    <div class="admin-list">
+        {% for rule in rules %}
+        <div class="admin-item">
+            <span>{{ rule.icon }} <strong>{{ rule.title }}</strong></span>
+            <a href="{{ url_for('delete_item', type='rule', item_id=rule.id) }}"
+               class="btn-delete" onclick="return confirm('Удалить?')">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Последние входы -->
+<div class="admin-section">
+    <h2><i class="fas fa-history"></i> Последние входы</h2>
+    <div class="admin-list">
+        {% for s in sessions %}
+        <div class="admin-item">
+            <span>
+                <strong>{{ s.player_name }}</strong>
+                <small>[{{ s.team_name }}]</small>
+                <small class="time-badge">{{ s.login_time[:16] }}</small>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

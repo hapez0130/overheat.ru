@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Карты — CS2 OverHeat{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-map-marked-alt"></i> Карты CS2</h1>
+    <p>Все актуальные карты для турниров</p>
+</div>
+
+<div class="maps-grid">
+    {% for map in maps %}
+    <div class="map-card" style="--map-color: {{ map.color }}">
+        <div class="map-image">
+            <div class="map-emoji">{{ map.emoji }}</div>
+        </div>
+        <div class="map-info">
+            <h3>{{ map.name }}</h3>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

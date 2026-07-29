@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Veto карт — CS2 Tournament{% endblock %}
+
+{% block content %}
+<div class="veto-container">
+    {% if veto_session %}
+        <!-- Заголовок -->
+        <div class="veto-header">
+            <h1><i class="fas fa-ban"></i> Veto карт</h1>
+            <p>Исключение: {{ banned_count }}/7 карт</p>
+        </div>
+        
+        <!-- Круговое меню карт -->
+        <div class="veto-wheel-container">
+            <div class="veto-wheel">
+                {% for map in remaining_maps %}
+                    {% set angle = (loop.index0 * (360 / remaining_maps|length)) %}
+                    <div class="map-node" 
+                         style="--angle: {{ angle }}deg; --map-color: {{ map.color }}"
+                         data-map="{{ map.name }}">
+                        <div class="map-node-inner">
+                            <div class="map-node-emoji">{{ map.emoji }}</div>
+                            <div class="map-node-name">{{ map.name }}</div>
+                        </div>
+                        <button class="map-ban-btn" onclick="banMap('{{ map.name }}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Центральный элемент -->
+            <div class="veto-center">
+                <div class="veto-center-content">
+                    <i class="fas fa-crosshairs"></i>
+                    <div class="current-team-indicator">
+                        <span>Ход команды:</span>
+                        <strong>{{ current_team.logo_emoji }} {{ current_team.name }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Исключённые карты -->
+        <div class="banned-maps">
+            <h3><i class="fas fa-ban"></i> Исключённые карты</h3>
+            <div class="banned-list" id="bannedList">
+                <!-- Заполняется через JS -->
+            </div>
+        </div>
+        
+        <!-- Финальная карта -->
+        <div class="final-map-display" id="finalMapDisplay" style="display: none;">
+            <div class="final-map-card">
+                <i class="fas fa-trophy"></i>
+                <h2>Выбрана карта!</h2>
+                <div class="final-map-name" id="finalMapName"></div>
+                <p>Приятной игры! 🎮</p>
+            </div>
+        </div>
+        
+        <!-- Панели команд -->
+        <div class="teams-panels">
+            <div class="team-panel team-panel-left {% if current_team.id == team1.id %}active-team{% endif %}">
+                <div class="team-panel-header">
+                    <div class="team-panel-logo">{{ team1.logo_emoji }}</div>
+                    <h3>{{ team1.name }}</h3>
+                </div>
+                <div class="team-panel-stats">
+                    <div class="team-stat">
+                        <i class="fas fa-users"></i>
+                        <span>Команда 1</span>
+                    </div>
+                </div>
+                <div class="team-panel-indicator">
+                    {% if current_team.id == team1.id %}
+                        <span class="turn-indicator">🎯 Ваш ход</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="vs-divider">
+                <span>VS</span>
+            </div>
+            
+            <div class="team-panel team-panel-right {% if current_team.id == team2.id %}active-team{% endif %}">
+                <div class="team-panel-header">
+                    <div class="team-panel-logo">{{ team2.logo_emoji }}</div>
+                    <h3>{{ team2.name }}</h3>
+                </div>
+                <div class="team-panel-stats">
+                    <div class="team-stat">
+                        <i class="fas fa-users"></i>
+                        <span>Команда 2</span>
+                    </div>
+                </div>
+                <div class="team-panel-indicator">
+                    {% if current_team.id == team2.id %}
+                        <span class="turn-indicator">🎯 Ваш ход</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+    {% else %}
+        <!-- Нет активной сессии -->
+        <div class="no-veto">
+            <i class="fas fa-hourglass-half"></i>
+            <h2>Veto не активно</h2>
+            <p>Администратор ещё не запустил выбор карт</p>
+            <p class="sub-text">Пожалуйста, подождите...</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Модальное окно подтверждения -->
+<div id="banModal" class="modal">
+    <div class="modal-content ban-modal">
+        <span class="modal-close">&times;</span>
+        <h2><i class="fas fa-ban"></i> Исключить карту?</h2>
+        <p>Вы уверены, что хотите исключить карту:</p>
+        <div class="ban-map-name" id="banMapName"></div>
+        <div class="ban-modal-buttons">
+            <button class="btn btn-secondary" onclick="closeBanModal()">Отмена</button>
+            <button class="btn btn-danger" id="confirmBanBtn">
+                <i class="fas fa-check"></i> Исключить
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

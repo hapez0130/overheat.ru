@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Правила — Counter Strike 2{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-book"></i> Правила турнира</h1>
+    <p>Ознакомьтесь с правилами перед началом игры</p>
+</div>
+
+{% if rules %}
+<div class="rules-list">
+    {% for rule in rules %}
+    <div class="rule-card">
+        <div class="rule-number">{{ loop.index }}</div>
+        <div class="rule-icon">{{ rule.icon }}</div>
+        <div class="rule-content">
+            <h3>{{ rule.title }}</h3>
+            <p>{{ rule.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-file-alt"></i>
+    <h3>Правила ещё не добавлены</h3>
+    <p>Администратор скоро добавит правила турнира</p>
+</div>
+{% endif %}
+{% endblock %}

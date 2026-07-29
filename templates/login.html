@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Вход — CS2 OverHeat{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fas fa-user-shield"></i>
+            <h1>Вход в команду</h1>
+            <p>Войдите как напарник зарегистрированной команды</p>
+        </div>
+        
+        <form method="POST" class="login-form">
+            <div class="form-group">
+                <label for="nickname">
+                    <i class="fas fa-user"></i> Ваш никнейм
+                </label>
+                <input type="text" id="nickname" name="nickname" 
+                       placeholder="Введите ваш игровой ник" required maxlength="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="team_id">
+                    <i class="fas fa-users"></i> Выберите команду
+                </label>
+                {% if teams %}
+                    <select id="team_id" name="team_id" required>
+                        <option value="">— Выберите команду —</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">
+                                 {{ team.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <div class="no-teams">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Команды ещё не зарегистрированы.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-large btn-block" {% if not teams %}disabled{% endif %}>
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p><i class="fas fa-info-circle"></i> Никнейм используется для подтверждения личности</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
